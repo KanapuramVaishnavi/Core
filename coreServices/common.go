@@ -771,3 +771,57 @@ func CheckForEmailAndPhoneNo(c *gin.Context, collection *mongo.Collection, data 
 	}
 	return nil
 }
+
+/*
+* Trim fields if they exists and fix them into the input data
+ */
+func trimIfExists(data map[string]interface{}, key string) error {
+	if _, exists := data[key]; exists {
+		err := GetTrimmedString(data, key)
+		if err != nil {
+			log.Printf("Error trimming %s: %v", key, err)
+			return err
+		}
+	}
+	return nil
+}
+
+/*
+* If DOB field exists then trim and normalize it
+* Insert into the input field
+ */
+func handleDOB(data map[string]interface{}) error {
+	raw, exists := data["dob"]
+	if !exists {
+		return nil
+	}
+
+	dobStr, ok := raw.(string)
+	if !ok {
+		return errors.New("dob must be a string")
+	}
+
+	if err := GetTrimmedString(data, "dob"); err != nil {
+		return err
+	}
+
+	normalized, err := NormalizeDate(dobStr)
+	if err != nil {
+		return err
+	}
+
+	data["dob"] = normalized
+	return nil
+}
+
+/*
+* Include all fields provided and extra field to modify into the input data provided
+* Make it as update filter
+ */
+func BuildUpdateFilter(data map[string]interface{}, code string) map[string]interface{} {
+	// data["createdBy"] = createdBy
+	data["updatedBy"] = code
+	data["updatedAt"] = time.Now()
+	updateFilter := bson.M{"$set": data}
+	return updateFilter
+}
