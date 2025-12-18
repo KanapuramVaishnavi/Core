@@ -30,10 +30,11 @@ const (
 	MedicineCollection       string = "MEDICINES"
 	AppointmentCollection    string = "APPOINTMENT"
 	TestReportCollection     string = "TEST_REPORT"
-	TestCollection                  = "TEST"
-	PharmacistCollection            = "PHARMACIST"
+	TestCollection           string = "TEST"
+	PharmacistCollection     string = "PHARMACIST"
 	PrescriptionCollection          = "PRESCRIPTION"
 	RoleCollection                  = "ROLE"
 	BillCollection                  = "BILL"
 	GuardianCollection              = "GUARDIAN"
+	Whole                           = "Collection"
 )
