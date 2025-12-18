@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
-	"example.com/core/util"
+	"github.com/KanapuramVaishnavi/Core/util"
 
-	"example.com/core/config/db"
-	"example.com/core/config/redis"
+	"github.com/KanapuramVaishnavi/Core/config/db"
+	"github.com/KanapuramVaishnavi/Core/config/redis"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"

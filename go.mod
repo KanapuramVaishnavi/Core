@@ -1,4 +1,4 @@
-module example.com/core
+module github.com/KanapuramVaishnavi/Core
 
 go 1.25.5
 
