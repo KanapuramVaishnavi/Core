@@ -775,7 +775,7 @@ func CheckForEmailAndPhoneNo(c *gin.Context, collection *mongo.Collection, data 
 /*
 * Trim fields if they exists and fix them into the input data
  */
-func trimIfExists(data map[string]interface{}, key string) error {
+func TrimIfExists(data map[string]interface{}, key string) error {
 	if _, exists := data[key]; exists {
 		err := GetTrimmedString(data, key)
 		if err != nil {
@@ -790,7 +790,7 @@ func trimIfExists(data map[string]interface{}, key string) error {
 * If DOB field exists then trim and normalize it
 * Insert into the input field
  */
-func handleDOB(data map[string]interface{}) error {
+func HandleDOB(data map[string]interface{}) error {
 	raw, exists := data["dob"]
 	if !exists {
 		return nil
