@@ -10,7 +10,6 @@ import (
 
 	"github.com/KanapuramVaishnavi/Core/config/db"
 	"github.com/KanapuramVaishnavi/Core/config/jwt"
-	services "github.com/KanapuramVaishnavi/Core/coreServices"
 	"github.com/KanapuramVaishnavi/Core/util"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -147,7 +146,7 @@ func GetRoleCode(c *gin.Context) (string, error) {
 * Find for the document and pass to extract privileges
  */
 func GetRoleDocument(ctx context.Context, roleCode string) (map[string]interface{}, error) {
-	coll := services.RoleCollection
+	coll := util.RoleCollection
 	roleColl := db.OpenCollections(coll)
 
 	filter := bson.M{

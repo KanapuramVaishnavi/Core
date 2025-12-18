@@ -402,7 +402,7 @@ func FetchRoleById(c *gin.Context, roleCode string) (map[string]interface{}, err
 		return cached, nil
 	}
 
-	collection := db.OpenCollections(RoleCollection)
+	collection := db.OpenCollections(util.RoleCollection)
 	filter := bson.M{"roleCode": roleCode}
 	role := make(map[string]interface{})
 	err = db.FindOne(c, collection, filter, role)
@@ -451,7 +451,7 @@ func CheckerAndGenerateUserCodes(c *gin.Context, collection, email, phone string
 	return code, createdBy, nil
 }
 func FetchTenantId(ctx *gin.Context, code string) (string, error) {
-	collection := db.OpenCollections(HospitalCollection)
+	collection := db.OpenCollections(util.HospitalCollection)
 	filter := bson.M{"code": code}
 	result := make(map[string]interface{})
 	err := db.FindOne(ctx, collection, filter, result)
@@ -663,7 +663,7 @@ func HasAccess(isSuperAdmin bool, cxtCollection string, tenantId string, code st
 		return errors.New("missing tenantId in document")
 	}
 
-	if cxtCollection == TenantCollection {
+	if cxtCollection == util.TenantCollection {
 		if tenantId != tenantIdFromDoc {
 			return errors.New("tenant access denied")
 		}
@@ -674,7 +674,7 @@ func HasAccess(isSuperAdmin bool, cxtCollection string, tenantId string, code st
 		return errors.New("missing createdBy in document")
 	}
 
-	if cxtCollection == HospitalCollection {
+	if cxtCollection == util.HospitalCollection {
 		if code != createdByFromDoc {
 			return errors.New("user access denied")
 		}
@@ -690,14 +690,14 @@ func CanAccess(userData, record map[string]interface{}, tenantId string, code st
 		return nil
 	}
 
-	if collFromContext == TenantCollection {
+	if collFromContext == util.TenantCollection {
 		if record["tenantId"].(string) != tenantId {
 			return errors.New("tenant does not have access")
 		}
 		return nil
 	}
 
-	if collFromContext == HospitalCollection {
+	if collFromContext == util.HospitalCollection {
 		if record["hospitalId"].(string) != code {
 			return errors.New("hospital admin does not have access")
 		}
