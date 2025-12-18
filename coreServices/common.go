@@ -26,27 +26,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const (
-	SuperAdminCollection     = "SUPERADMIN"
-	TenantCollection         = "TENANT"
-	HospitalCollection       = "HOSPITAL"
-	DoctorCollection         = "DOCTOR"
-	DoctorTimeSlotCollection = "DOCTOR_TIMESLOTS"
-	ReceptionistCollection   = "RECEPTIONIST"
-	PatientCollection        = "PATIENT"
-	MedicalRecordCollection  = "MEDICAL_RECORD"
-	NurseCollection          = "NURSE"
-	MedicineCollection       = "MEDICINES"
-	AppointmentCollection    = "APPOINTMENT"
-	TestReportCollection     = "TEST_REPORT"
-	TestCollection           = "TEST"
-	PharmacistCollection     = "PHARMACIST"
-	PrescriptionCollection   = "PRESCRIPTION"
-	RoleCollection           = "ROLE"
-	BillCollection           = "BILL"
-	GuardianCollection       = "GUARDIAN"
-)
-
 var ctx context.Context = context.Background()
 
 /*
