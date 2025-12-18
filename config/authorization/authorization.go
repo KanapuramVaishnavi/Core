@@ -10,7 +10,7 @@ import (
 
 	"github.com/KanapuramVaishnavi/Core/config/db"
 	"github.com/KanapuramVaishnavi/Core/config/jwt"
-	services "github.com/KanapuramVaishnavi/Core/core_services"
+	services "github.com/KanapuramVaishnavi/Core/coreservices"
 	"github.com/KanapuramVaishnavi/Core/util"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
