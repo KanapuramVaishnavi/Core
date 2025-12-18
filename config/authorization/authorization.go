@@ -10,7 +10,7 @@ import (
 
 	"github.com/KanapuramVaishnavi/Core/config/db"
 	"github.com/KanapuramVaishnavi/Core/config/jwt"
-	"github.com/KanapuramVaishnavi/Core/services"
+	services "github.com/KanapuramVaishnavi/Core/coreServices"
 	"github.com/KanapuramVaishnavi/Core/util"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -25,7 +25,7 @@ by trimming the prefix and if the header is valid only
 it gets passed other and checks whether the bearer
 Token is Invalid
 */
-func extractTokenFromHeader(c *gin.Context) (string, error) {
+func ExtractTokenFromHeader(c *gin.Context) (string, error) {
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
 		return "", fmt.Errorf("authorization header required")
@@ -42,7 +42,7 @@ Verify user exists  checks the collection of user
 sort according to the decreasing order by the key of
 Updated At
 */
-func verifyUserExists(collectionName, code string) error {
+func VerifyUserExists(collectionName, code string) error {
 	collection := db.OpenCollections(collectionName)
 	filter := bson.M{"code": code}
 	user := bson.M{}
@@ -78,7 +78,7 @@ passed.
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		tokenString, err := extractTokenFromHeader(c)
+		tokenString, err := ExtractTokenFromHeader(c)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 			c.Abort()
@@ -91,7 +91,7 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 		log.Println(claims.Collection)
-		if err := verifyUserExists(claims.Collection, claims.Code); err != nil {
+		if err := VerifyUserExists(claims.Collection, claims.Code); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			c.Abort()
 			return
@@ -126,7 +126,7 @@ func CORSMiddleware() gin.HandlerFunc {
 /*
 * Extract roleCode from the request
  */
-func getRoleCode(c *gin.Context) (string, error) {
+func GetRoleCode(c *gin.Context) (string, error) {
 	roleCodeValue, exists := c.Get("roleCode")
 	if !exists {
 		log.Println("Unable to get the code key from claims")
@@ -146,7 +146,7 @@ func getRoleCode(c *gin.Context) (string, error) {
 * Get role document for the given roleCode
 * Find for the document and pass to extract privileges
  */
-func getRoleDocument(ctx context.Context, roleCode string) (map[string]interface{}, error) {
+func GetRoleDocument(ctx context.Context, roleCode string) (map[string]interface{}, error) {
 	coll := services.RoleCollection
 	roleColl := db.OpenCollections(coll)
 
@@ -167,7 +167,7 @@ func getRoleDocument(ctx context.Context, roleCode string) (map[string]interface
 /* Extract privileges from RoleDocument from the document
 * Check for the data and then pass to []map[string]interface{}
  */
-func extractPrivileges(roleDoc map[string]interface{}) ([]map[string]interface{}, error) {
+func ExtractPrivileges(roleDoc map[string]interface{}) ([]map[string]interface{}, error) {
 
 	privRaw, ok := roleDoc["privileges"]
 	if !ok || privRaw == nil {
@@ -204,7 +204,7 @@ func extractPrivileges(roleDoc map[string]interface{}) ([]map[string]interface{}
 * Check whether the moduleName and dbModule are same
 * If found same,go to the access []string then find for the access list and give access
  */
-func hasAccess(privileges []map[string]interface{}, moduleName string, access string) (bool, string, []string, error) {
+func HasAccessForPrivileges(privileges []map[string]interface{}, moduleName string, access string) (bool, string, []string, error) {
 	for _, priv := range privileges {
 
 		dbModule, _ := priv["module"].(string)
@@ -261,7 +261,7 @@ func Authorize(moduleName string, access string) gin.HandlerFunc {
 		log.Println("collection from context: ", ctxCollection)
 		isSuperAdmin := c.GetBool("isSuperAdmin")
 		log.Println("isSuperAdmin from context: ", isSuperAdmin)
-		roleCode, err := getRoleCode(c)
+		roleCode, err := GetRoleCode(c)
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			c.Abort()
@@ -269,7 +269,7 @@ func Authorize(moduleName string, access string) gin.HandlerFunc {
 		}
 
 		ctx := c.Request.Context()
-		roleDoc, err := getRoleDocument(ctx, roleCode)
+		roleDoc, err := GetRoleDocument(ctx, roleCode)
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			c.Abort()
@@ -277,14 +277,14 @@ func Authorize(moduleName string, access string) gin.HandlerFunc {
 		}
 
 		// Extract privileges using the helper
-		privileges, err := extractPrivileges(roleDoc)
+		privileges, err := ExtractPrivileges(roleDoc)
 		if err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			c.Abort()
 			return
 		}
 
-		ok, foundModule, accessList, err := hasAccess(privileges, moduleName, access)
+		ok, foundModule, accessList, err := HasAccessForPrivileges(privileges, moduleName, access)
 		if !ok {
 			c.JSON(400, gin.H{
 				"error":       err.Error(),

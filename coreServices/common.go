@@ -29,19 +29,19 @@ import (
 const (
 	SuperAdminCollection     = "SUPERADMIN"
 	TenantCollection         = "TENANT"
-	hospitalCollection       = "HOSPITAL"
-	doctorCollection         = "DOCTOR"
-	doctorTimeSlotCollection = "DOCTOR_TIMESLOTS"
-	receptionistCollection   = "RECEPTIONIST"
-	patientCollection        = "PATIENT"
-	medicalRecordCollection  = "MEDICAL_RECORD"
-	nurseCollection          = "NURSE"
-	medicineCollection       = "MEDICINES"
-	appointmentCollection    = "APPOINTMENT"
-	testReportCollection     = "TEST_REPORT"
-	testCollection           = "TEST"
-	pharmacistCollection     = "PHARMACIST"
-	prescriptionCollection   = "PRESCRIPTION"
+	HospitalCollection       = "HOSPITAL"
+	DoctorCollection         = "DOCTOR"
+	DoctorTimeSlotCollection = "DOCTOR_TIMESLOTS"
+	ReceptionistCollection   = "RECEPTIONIST"
+	PatientCollection        = "PATIENT"
+	MedicalRecordCollection  = "MEDICAL_RECORD"
+	NurseCollection          = "NURSE"
+	MedicineCollection       = "MEDICINES"
+	AppointmentCollection    = "APPOINTMENT"
+	TestReportCollection     = "TEST_REPORT"
+	TestCollection           = "TEST"
+	PharmacistCollection     = "PHARMACIST"
+	PrescriptionCollection   = "PRESCRIPTION"
 	RoleCollection           = "ROLE"
 	BillCollection           = "BILL"
 	GuardianCollection       = "GUARDIAN"
@@ -152,7 +152,7 @@ func IsPhoneNumberExists(collName string, phone string) (bool, error) {
 * Check for the type of data, and value stored at the field
 * Trim and store in data
  */
-func getTrimmedString(data map[string]interface{}, key string) error {
+func GetTrimmedString(data map[string]interface{}, key string) error {
 	raw, exists := data[key]
 	if !exists {
 		return fmt.Errorf("%s missing field", key)
@@ -395,7 +395,7 @@ func Checker(Email string, Phone string, collName string) error {
 func ValidateUserInput(data map[string]interface{}) error {
 	fields := []string{"name", "email", "phoneNo", "dob", "roleCode"}
 	for _, f := range fields {
-		if err := getTrimmedString(data, f); err != nil {
+		if err := GetTrimmedString(data, f); err != nil {
 			log.Println("Error from getTrimmedString:", err)
 			return err
 		}
@@ -471,8 +471,8 @@ func CheckerAndGenerateUserCodes(c *gin.Context, collection, email, phone string
 
 	return code, createdBy, nil
 }
-func fetchTenantId(ctx *gin.Context, code string) (string, error) {
-	collection := db.OpenCollections(hospitalCollection)
+func FetchTenantId(ctx *gin.Context, code string) (string, error) {
+	collection := db.OpenCollections(HospitalCollection)
 	filter := bson.M{"code": code}
 	result := make(map[string]interface{})
 	err := db.FindOne(ctx, collection, filter, result)
@@ -695,7 +695,7 @@ func HasAccess(isSuperAdmin bool, cxtCollection string, tenantId string, code st
 		return errors.New("missing createdBy in document")
 	}
 
-	if cxtCollection == hospitalCollection {
+	if cxtCollection == HospitalCollection {
 		if code != createdByFromDoc {
 			return errors.New("user access denied")
 		}
@@ -704,7 +704,7 @@ func HasAccess(isSuperAdmin bool, cxtCollection string, tenantId string, code st
 	return nil
 }
 
-func canAccess(userData, record map[string]interface{}, tenantId string, code string, collFromContext string, isSuperAdmin bool) error {
+func CanAccess(userData, record map[string]interface{}, tenantId string, code string, collFromContext string, isSuperAdmin bool) error {
 	log.Println("record: ", record)
 
 	if isSuperAdmin {
@@ -718,7 +718,7 @@ func canAccess(userData, record map[string]interface{}, tenantId string, code st
 		return nil
 	}
 
-	if collFromContext == hospitalCollection {
+	if collFromContext == HospitalCollection {
 		if record["hospitalId"].(string) != code {
 			return errors.New("hospital admin does not have access")
 		}
@@ -732,7 +732,7 @@ func canAccess(userData, record map[string]interface{}, tenantId string, code st
 	return nil
 }
 
-func checkCacheAccess(c *gin.Context, key string, collFromContext string, userData map[string]interface{}, tenantId, code string, isSuperAdmin bool) (map[string]interface{}, bool, error) {
+func CheckCacheAccess(c *gin.Context, key string, collFromContext string, userData map[string]interface{}, tenantId, code string, isSuperAdmin bool) (map[string]interface{}, bool, error) {
 
 	cached := make(map[string]interface{})
 	exists, err := redis.GetCache(c, key, &cached)
@@ -740,7 +740,7 @@ func checkCacheAccess(c *gin.Context, key string, collFromContext string, userDa
 		return nil, false, nil
 	}
 
-	if err := canAccess(userData, cached, tenantId, code, collFromContext, isSuperAdmin); err != nil {
+	if err := CanAccess(userData, cached, tenantId, code, collFromContext, isSuperAdmin); err != nil {
 		return nil, true, err
 	}
 

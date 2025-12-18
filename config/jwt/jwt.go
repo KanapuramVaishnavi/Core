@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtKey = []byte(os.Getenv("JWT_SECRET"))
+var JwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 type JWTClaim struct {
 	Code         string `json:"code"`
@@ -53,7 +53,7 @@ func GenerateJWT(code, email, roleCode, collectionName, tenantId string, isSuper
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtKey)
+	return token.SignedString(JwtKey)
 }
 
 /*
@@ -61,7 +61,7 @@ Function For Verifying that the token is Valid or Not
 */
 func ValidateToken(tokenString string) (*JWTClaim, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaim{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		return JwtKey, nil
 	})
 	if err != nil {
 		return nil, err
