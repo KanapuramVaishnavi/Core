@@ -156,6 +156,7 @@ func IsEmailExists(collName string, email string) (bool, error) {
 	filter := bson.M{"email": email}
 	emailcount, err := collection.CountDocuments(context.Background(), filter)
 	if err != nil {
+		log.Println("Error while countingDocument with email provided: ", err)
 		return false, err
 	}
 	return emailcount > 0, err
@@ -215,7 +216,7 @@ func NormalizeDate(dobStr string) (string, error) {
 			return dob.Format("2006-01-02"), nil
 		}
 	}
-	return "", errors.New("invalid DOB format")
+	return "", errors.New(util.INVALID_DATE_FORMAT)
 }
 
 // /*
@@ -336,7 +337,7 @@ Returns an error if any validation rule fails.
 func Checker(Email string, Phone string, collName string) error {
 	email := NormalizeEmail(Email)
 	if email == "" {
-		return errors.New(util.EMAIL_NOT_VALID)
+		return errors.New(util.PROVIDED_EMPTY_EMAIL)
 	}
 	emailsCount, emailError := IsEmailExists(collName, Email)
 	if emailError != nil {
@@ -348,7 +349,7 @@ func Checker(Email string, Phone string, collName string) error {
 	}
 	modifiedPhoneNumber := NormalizePhoneNumber(Phone)
 	if modifiedPhoneNumber == "" {
-		return errors.New(util.PHONENUMBER_NOT_VALID)
+		return errors.New(util.PROVIDED_EMPTY_PHONE_NUMBER)
 	}
 	Phone = modifiedPhoneNumber
 	check := IsPhoneNumberValid(Phone)
@@ -360,8 +361,8 @@ func Checker(Email string, Phone string, collName string) error {
 		return phoneNumberError
 	}
 	if phoneNumbersCount == true {
-		log.Println("IsPhone Number Triggered")
-		return errors.New(util.USER_EXISTING_PHONE)
+		log.Println("PhoneNo already exists")
+		return errors.New(util.PHONE_NUMBER_ALREADY_EXISTS)
 	}
 	return nil
 }
@@ -392,7 +393,7 @@ Steps:
 func FetchRoleById(c *gin.Context, roleCode string) (map[string]interface{}, error) {
 
 	if strings.TrimSpace(roleCode) == "" {
-		return nil, errors.New("roleCode cannot be empty")
+		return nil, errors.New(util.ROLE_CODE_IS_EMPTY)
 	}
 	key := util.RoleKey + roleCode
 
@@ -407,7 +408,7 @@ func FetchRoleById(c *gin.Context, roleCode string) (map[string]interface{}, err
 	role := make(map[string]interface{})
 	err = db.FindOne(c, collection, filter, role)
 	if err != nil {
-		return nil, errors.New("role not found")
+		return nil, errors.New(util.ERR_WHILE_FETCHING_ROLE)
 	}
 
 	return role, nil
@@ -497,7 +498,7 @@ func GenerateAndHashOTP(data map[string]interface{}) (string, error) {
 	hashedOTP, err := bcrypt.GenerateFromPassword([]byte(otp), bcrypt.DefaultCost)
 	if err != nil {
 		log.Println("Unable to bcrypt the otp")
-		return "", fmt.Errorf("failed to hash OTP: %v", err)
+		return "", errors.New(util.FAILED_TO_HASH_OTP)
 	}
 	log.Println(string(hashedOTP))
 	data["password"] = string(hashedOTP)
@@ -551,7 +552,6 @@ func CreateLoginRecord(ctx context.Context, role string, code string, email stri
 	loginCollection := db.OpenCollections("LOGIN")
 	filter := bson.M{
 		"$or": []bson.M{
-			{"code": code},
 			{"email": email},
 			{"phoneNo": phone},
 		},
@@ -562,6 +562,13 @@ func CreateLoginRecord(ctx context.Context, role string, code string, email stri
 	log.Println("existing: ", existing)
 	log.Println(err)
 	if err == nil && len(existing) > 0 {
+		if v, ok := existing["email"].(string); ok && v == email {
+			return errors.New(util.USER_EXISTING_EMAIL_IN_LOGIN)
+		}
+
+		if v, ok := existing["phoneNo"].(string); ok && v == phone {
+			return errors.New(util.USER_EXISTING_PHONE_NUMBER_IN_LOGIN)
+		}
 		log.Println("Already exists in db: ", err)
 		return errors.New("Already exists in loginCollection")
 	}
@@ -602,12 +609,12 @@ func GetTenantIdFromContext(c *gin.Context) (string, error) {
 	tenantIdVal, ok := c.Get("tenantId")
 	if !ok {
 		log.Println("Error while fetching tenantId from token")
-		return val, errors.New("Error while fetching tenantId from token")
+		return val, errors.New(util.UNABLE_TO_FETCH_TENANT_ID_FROM_CONTEXT)
 	}
 	tenantId, ok := tenantIdVal.(string)
 	if !ok {
 		log.Println("Error while type converting from interface to string tenantId ")
-		return val, errors.New("Type assertion for tenantId from token ")
+		return val, errors.New(util.ERR_WHILE_FETCHING_TENANT_ID_OF_TYPE_STRING)
 	}
 	return tenantId, nil
 }
@@ -615,7 +622,7 @@ func IsSuperAdmin(c *gin.Context) (bool, error) {
 	IsSuperAdmin, ok := c.Get("isSuperAdmin")
 	if !ok {
 		log.Println("error from issuperAdmin")
-		return false, errors.New("error retrieving the data from context")
+		return false, errors.New(util.UNABLE_TO_FETCH_IS_SUPER_ADMIN_FROM_CONTEXT)
 	}
 	issuperadmin := IsSuperAdmin.(bool)
 	return issuperadmin, nil
@@ -660,23 +667,23 @@ func HasAccess(isSuperAdmin bool, cxtCollection string, tenantId string, code st
 
 	tenantIdFromDoc, ok := doc["tenantId"].(string)
 	if !ok {
-		return errors.New("missing tenantId in document")
+		return errors.New(util.MISSING_TENANT_ID_FROM_DOCUMENT)
 	}
 
 	if cxtCollection == util.TenantCollection {
 		if tenantId != tenantIdFromDoc {
-			return errors.New("tenant access denied")
+			return errors.New(util.TENANT_DOESNOT_HAVE_ACCESS)
 		}
 	}
 
 	createdByFromDoc, ok := doc["createdBy"].(string)
 	if !ok {
-		return errors.New("missing createdBy in document")
+		return errors.New(util.MISSING_CREATED_BY_IN_DOCUMENT)
 	}
 
 	if cxtCollection == util.HospitalCollection {
 		if code != createdByFromDoc {
-			return errors.New("user access denied")
+			return errors.New(util.INVALID_USER_TO_ACCESS)
 		}
 	}
 
@@ -692,20 +699,20 @@ func CanAccess(userData, record map[string]interface{}, tenantId string, code st
 
 	if collFromContext == util.TenantCollection {
 		if record["tenantId"].(string) != tenantId {
-			return errors.New("tenant does not have access")
+			return errors.New(util.TENANT_DOESNOT_HAVE_ACCESS)
 		}
 		return nil
 	}
 
 	if collFromContext == util.HospitalCollection {
 		if record["hospitalId"].(string) != code {
-			return errors.New("hospital admin does not have access")
+			return errors.New(util.HOSPITAL_ADMIN_DOESNOT_HAVE_ACCESS)
 		}
 		return nil
 	}
 
 	if userData["createdBy"].(string) != record["hospitalId"].(string) {
-		return errors.New("user does not have access")
+		return errors.New(util.INVALID_USER_TO_ACCESS)
 	}
 
 	return nil
@@ -739,7 +746,11 @@ func CheckForEmailAndPhoneNo(c *gin.Context, collection *mongo.Collection, data 
 			if ok {
 				err := db.FindOne(c, collection, filter, &result)
 				if err == nil {
-					return fmt.Errorf("%s already exists in db", fieldName)
+					if fieldName == "email" {
+						return errors.New(util.USER_EXISTING_EMAIL)
+					} else {
+						return errors.New(util.PHONE_NUMBER_ALREADY_EXISTS)
+					}
 				}
 				if err != mongo.ErrNoDocuments {
 					return err
@@ -777,7 +788,7 @@ func HandleDOB(data map[string]interface{}) error {
 
 	dobStr, ok := raw.(string)
 	if !ok {
-		return errors.New("dob must be a string")
+		return errors.New(util.INVALID_DOB_FORMAT)
 	}
 
 	if err := GetTrimmedString(data, "dob"); err != nil {

@@ -105,31 +105,6 @@ func FindOne(ctx context.Context, collection *mongo.Collection, filter interface
 	return nil
 }
 
-// /*
-// * To findAll inside the particular db collection
-// * Pass each document into the list of interface
-// * Check if the document present or not and then Decode and pass to the results
-//  */
-
-// func FindAll(c context.Context, collection *mongo.Collection, filter interface{}, opts *options.FindOptions, results []interface{}) error {
-
-// 	if filter == nil {
-// 		filter = bson.M{}
-// 	}
-// 	cursor, err := collection.Find(c, filter, opts)
-// 	if cursor.Next(c) {
-// 		doc := make(map[string]interface{})
-// 		if err := cursor.Decode(&doc); err != nil {
-// 			log.Println("Error decoding document:", err)
-// 			return err
-// 		}
-// 		results = append(results, doc)
-// 	}
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
 /*
 * To findAll inside the particular db collection
 * Pass each document into the list of interface
