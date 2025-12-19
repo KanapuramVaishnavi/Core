@@ -102,4 +102,5 @@ var (
 	RECEPTIONIST_DOESNOT_HAVE_ACCESS_TO_UPDATE_APPOINTMENT   = "This receptionist doesnot have access to update the appointment"
 	UNABLE_TO_FETCH_HOSPITAL_ID_FROM_APPOINTMENT             = "Unable to get hospitalId from appointment"
 	DOCTOR_DOESNOT_HAVE_ACCESS_TO_UPDATE_APPOINTMENT         = "This doctor doesnot have access to update appointment"
+	UNSUPPORTED_MEDICINE_TYPE_FROM_PRESCRIPTION              = "Unsupported medicine type from prescription"
 )
