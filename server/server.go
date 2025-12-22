@@ -30,7 +30,7 @@ func GetDefaultOptions() Options {
 		WebServerEnabled:    true,
 		WebServerPort:       "8080",
 		WebServerPreHandler: nil,
-		JobsEnabled:         false,
+		JobsEnabled:         true,
 		JobsHandler:         nil,
 	}
 }
