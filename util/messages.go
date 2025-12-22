@@ -110,4 +110,5 @@ var (
 	IS_CONSENT_VERIFIED_MUST_BE_VALID_TYPE                   = "isConsentVerified must be the boolean type"
 	UNABLE_TO_FETCH_OTP_FROM_DOCUMENT                        = "Unable to fetch otp from the particular document"
 	INCORRECT_PASSWORD                                       = "incorrect password"
+	ADD                                                      = "add"
 )
