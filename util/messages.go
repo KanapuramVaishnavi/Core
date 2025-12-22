@@ -104,4 +104,6 @@ var (
 	DOCTOR_DOESNOT_HAVE_ACCESS_TO_UPDATE_APPOINTMENT         = "This doctor doesnot have access to update appointment"
 	UNSUPPORTED_MEDICINE_TYPE_FROM_PRESCRIPTION              = "Unsupported medicine type from prescription"
 	HOSPITAL_ADMIN_DOESNOT_HAVE_ACCESS_TO_UPDATE_TEST        = "This hospital amdin doesnot have access to update test"
+	IS_CONSENT_VERIFIED_UNBALE_TO_FETCH                      = "Unable to fetch isConsentVerified feild from medicalRecord"
+	CONSENT_NOT_APPROVED                                     = "consent was not approved for the patient"
 )
