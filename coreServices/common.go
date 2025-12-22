@@ -711,6 +711,8 @@ func CanAccess(userData, record map[string]interface{}, tenantId string, code st
 		return nil
 	}
 
+	log.Println("userData: ", userData["createdBy"].(string))
+	log.Println("hospitalId: ", record["hospitalId"].(string))
 	if userData["createdBy"].(string) != record["hospitalId"].(string) {
 		return errors.New(util.INVALID_USER_TO_ACCESS)
 	}
