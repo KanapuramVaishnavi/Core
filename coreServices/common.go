@@ -71,6 +71,8 @@ func GenerateEmpCode(collName string) (string, error) {
 		prefix = "T"
 	case "SUPERADMIN":
 		prefix = "S"
+	case "CONSENT":
+		prefix = "C"
 	case "ROLE":
 		prefix = "R"
 		sortField = "roleCode"

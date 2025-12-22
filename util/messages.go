@@ -106,4 +106,8 @@ var (
 	HOSPITAL_ADMIN_DOESNOT_HAVE_ACCESS_TO_UPDATE_TEST        = "This hospital amdin doesnot have access to update test"
 	IS_CONSENT_VERIFIED_UNBALE_TO_FETCH                      = "Unable to fetch isConsentVerified feild from medicalRecord"
 	CONSENT_NOT_APPROVED                                     = "consent was not approved for the patient"
+	IS_CONSENT_VERIFIED_NOT_FOUND                            = "isConsentVerified field not provided"
+	IS_CONSENT_VERIFIED_MUST_BE_VALID_TYPE                   = "isConsentVerified must be the boolean type"
+	UNABLE_TO_FETCH_OTP_FROM_DOCUMENT                        = "Unable to fetch otp from the particular document"
+	INCORRECT_PASSWORD                                       = "incorrect password"
 )
