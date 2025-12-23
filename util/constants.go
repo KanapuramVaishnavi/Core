@@ -18,6 +18,7 @@ const (
 	TestReportKey                 string = "TEST_REPORT#"
 	BillKey                       string = "BILL#"
 	GuardianKey                   string = "GUARDIAN#"
+	ConsentKey                    string = "CONSENT#"
 	SuperAdminCollection          string = "SUPERADMIN"
 	TenantCollection              string = "TENANT"
 	HospitalCollection            string = "HOSPITAL"
