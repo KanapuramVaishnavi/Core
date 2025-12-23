@@ -112,4 +112,9 @@ var (
 	INCORRECT_PASSWORD                                       = "incorrect password"
 	PATIENT_DOESNOT_HAVE_ACCESS                              = "patient doesnot have access"
 	GUARDIAN_DOESNOT_HAVE_ACCESS                             = "guardian doesnot have access"
+	UNABLE_TO_FETCH_DOCTOR_ID_FROM_MEDICAL_RECORD            = "Unable to fetch doctorId from medicalRecord"
+	DOCTOR_DOESNOT_HAVE_ACCESS_TO_CREATE_PRESCRIPTION        = "Doctor doesnot have access to create prescription"
+	MEDICINES_MUST_BE_ARRAY                                  = "medicines must be an array"
+	FREQUENCY_MUST_BE_AN_OBJECT                              = "Frequency must be an object"
+	UNABLE_TO_FETCH_CREATED_BY_FROM_PRESCRIPTION             = "Unable to fetch createdBy from the prescription document"
 )
