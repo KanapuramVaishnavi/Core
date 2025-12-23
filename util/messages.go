@@ -108,7 +108,7 @@ var (
 	CONSENT_NOT_APPROVED                                     = "consent was not approved for the patient"
 	IS_CONSENT_VERIFIED_NOT_FOUND                            = "isConsentVerified field not provided"
 	IS_CONSENT_VERIFIED_MUST_BE_VALID_TYPE                   = "isConsentVerified must be the boolean type"
-	UNABLE_TO_FETCH_OTP_FROM_DOCUMENT                        = "Unable to fetch otp from the particular document"
+	UNABLE_TO_FETCH_OTP_FROM_DOCUMENT                        = "Unable to fetch otp from the consentVerification document"
 	INCORRECT_PASSWORD                                       = "incorrect password"
 	PATIENT_DOESNOT_HAVE_ACCESS                              = "patient doesnot have access"
 	GUARDIAN_DOESNOT_HAVE_ACCESS                             = "guardian doesnot have access"
