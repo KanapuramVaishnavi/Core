@@ -21,6 +21,8 @@ type Options struct {
 	JobsEnabled         bool
 	JobsHandler         func()
 	WebServerPreHandler func(*gin.Engine)
+	MigrationHandler    func()
+	MigrationEnabled    bool
 }
 
 func GetDefaultOptions() Options {
@@ -32,6 +34,8 @@ func GetDefaultOptions() Options {
 		WebServerPreHandler: nil,
 		JobsEnabled:         true,
 		JobsHandler:         nil,
+		MigrationHandler:    nil,
+		MigrationEnabled:    true,
 	}
 }
 func Start(options Options) {
@@ -45,6 +49,9 @@ func Start(options Options) {
 	}
 	if options.JobsHandler != nil && options.JobsEnabled {
 		options.JobsHandler()
+	}
+	if options.MigrationHandler != nil && options.MigrationEnabled {
+		options.MigrationHandler()
 	}
 	initServer(&options)
 
