@@ -35,6 +35,7 @@ func GenerateJWT(code, email, roleCode, collectionName, tenantId string, isSuper
 	// expHours := time.Duration(expMinutes) * time.Minute
 	expDaysStr := os.Getenv("JWT_EXP_DAYS")
 	expDays, err := strconv.Atoi(expDaysStr)
+	log.Println("ExpirationDay: ", expDays)
 	if err != nil || expDays <= 0 {
 		expDays = 7 // default to 1 day
 	}
