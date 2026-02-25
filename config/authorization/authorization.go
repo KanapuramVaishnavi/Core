@@ -111,7 +111,7 @@ Here the cors middleware takes place
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*") // or specific domain
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, PATCH")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization")
 
 		if c.Request.Method == "OPTIONS" {
@@ -147,12 +147,13 @@ func GetRoleCode(c *gin.Context) (string, error) {
  */
 func GetRoleDocument(ctx context.Context, roleCode string) (map[string]interface{}, error) {
 	coll := util.RoleCollection
+	log.Println("coll:", coll)
 	roleColl := db.OpenCollections(coll)
 
 	filter := bson.M{
 		"roleCode": roleCode,
 	}
-
+	log.Println("filter: ", filter)
 	roleDoc := make(map[string]interface{})
 	err := db.FindOne(ctx, roleColl, filter, &roleDoc)
 	if err != nil {
@@ -282,7 +283,6 @@ func Authorize(moduleName string, access string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		ok, foundModule, accessList, err := HasAccessForPrivileges(privileges, moduleName, access)
 		if !ok {
 			c.JSON(400, gin.H{
