@@ -76,6 +76,8 @@ func GenerateEmpCode(collName string) (string, error) {
 	case "ROLE":
 		prefix = "R"
 		sortField = "roleCode"
+	case "TEST":
+		prefix = "TE"
 	default:
 		return "", fmt.Errorf("unsupported collection: %s", collName)
 	}
